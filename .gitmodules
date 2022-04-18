@@ -1,0 +1,6 @@
+[submodule "scmaudio/dependencies/libnyquist"]
+	path = scmaudio/dependencies/libnyquist
+	url = https://github.com/ddiakopoulos/libnyquist
+[submodule "scmaudio/dependencies/rtaudio"]
+	path = scmaudio/dependencies/rtaudio
+	url = https://github.com/thestk/rtaudio
