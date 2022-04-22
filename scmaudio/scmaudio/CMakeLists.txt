@@ -1,24 +1,22 @@
-cmake_minimum_required(VERSION 3.14)
-
-project(ScmAudio)
-
-file(GLOB_RECURSE
-    SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-)
+InitCpp17Project(ScmAudio)
+GatherSources(SOURCES)
+SetFolderHierarchy(${CMAKE_CURRENT_SOURCE_DIR} ${SOURCES})
 
 add_library(${PROJECT_NAME} SHARED
     ${SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME}
-    ${BINARY_OUTPUT_FOLDER}/fftw3f.lib
-    ${BINARY_OUTPUT_FOLDER}/libnyquist.lib
-    ${BINARY_OUTPUT_FOLDER}/rtaudio.lib
+set(DEBUG_OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY}/Debug)
+set(RELEASE_OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY}/Release)
+
+SET(LIBRARIES_TO_LINK
+    debug ${DEBUG_OUTPUT_DIRECTORY}/fftw3f.lib
+    debug ${DEBUG_OUTPUT_DIRECTORY}/libnyquist_d.lib
+    debug ${DEBUG_OUTPUT_DIRECTORY}/rtaudiod.lib
+    optimized ${RELEASE_OUTPUT_DIRECTORY}/fftw3f.lib
+    optimized ${RELEASE_OUTPUT_DIRECTORY}/libnyquist.lib
+    optimized ${RELEASE_OUTPUT_DIRECTORY}/rtaudio.lib
 )
 
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES_TO_LINK})
+add_dependencies(ScmAudio fftw3f libnyquist rtaudio)

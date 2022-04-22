@@ -11,8 +11,8 @@ namespace ScmAudio
     class Session
     {
     public:
-        Vector<AudioDevice> GetCaptureDevices();
-        Vector<AudioDevice> GetPlaybackDevices();
+        Vector<AudioDevice> GetCaptureDevices() const;
+        Vector<AudioDevice> GetPlaybackDevices() const;
         String SetPlaybackDevice(const AudioDevice&);
         String SetSource(const AudioDevice&);
         String SetSource(const String& /*filePath*/);
@@ -21,7 +21,7 @@ namespace ScmAudio
         void Pause();
         void Resume();
         void Configure(const Configuration&);
-        void ReadSnapshot(SnapshotData&);
+        void ReadSnapshot(SnapshotData&) const;
         void TapTempo();
     };
 
