@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdint.h>
 
+#include "defines.h"
+
 namespace ScmAudio
 {
     using uint32 = uint32_t;

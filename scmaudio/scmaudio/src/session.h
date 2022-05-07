@@ -4,11 +4,11 @@
 
 namespace ScmAudio
 {
-    class AudioDevice;
-    class SnapshotData;
-    class Configuration;
+    struct AudioDevice;
+    struct SnapshotData;
+    struct Configuration;
 
-    class Session
+    class SCMAUDIO_API Session
     {
     public:
         Vector<AudioDevice> GetCaptureDevices() const;

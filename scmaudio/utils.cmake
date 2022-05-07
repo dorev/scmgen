@@ -9,7 +9,6 @@ endmacro(InitCpp17Project)
 
 # ==============================================================================
 macro (GatherSources outputVariable)
-
     # Treat first extra argument as the folder to explore
     # otherwise default to CMAKE_CURRENT_SOURCE_DIR
     set(argv ${ARGN})
@@ -19,7 +18,6 @@ macro (GatherSources outputVariable)
     else()
         set(rootFolder ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
-
     file(GLOB_RECURSE
         ${outputVariable}
         ${rootFolder}/*.c
@@ -28,25 +26,21 @@ macro (GatherSources outputVariable)
         ${rootFolder}/*.h
         ${rootFolder}/*.hpp
     )
-
 endmacro(GatherSources)
 
 # ==============================================================================
 
 function(SetFolderHierarchy rootFolder sourceList)
-
-    foreach(sourceFile IN ITEMS ${sourceList})
+    foreach(sourceFile IN ITEMS ${${sourceList}})
         if (IS_ABSOLUTE "${sourceFile}")
             file(RELATIVE_PATH sourceRelativePath "${rootFolder}" "${sourceFile}")
         else()
             set(sourceRelativePath "${sourceFile}")
         endif()
-
         get_filename_component(sourceFolderPath "${sourceRelativePath}" DIRECTORY)
         string(REPLACE "/" "\\" sourcePathMsvc "${sourceFolderPath}")
         source_group("${sourcePathMsvc}" FILES "${sourceFile}")
     endforeach()
-
 endfunction(SetFolderHierarchy)
 
 # ==============================================================================
@@ -57,17 +51,13 @@ macro (SwigCsharp swigFile outputDirectory namespace)
         message( FATAL_ERROR "SWIG_EXE not defined")
     endif()
 
-    set(SWIG_COMMAND "${SWIG_EXE}  -c++ -csharp ${outputDirectory}")
+    set(SWIG_COMMAND "${SWIG_EXE} -c++ -csharp ${outputDirectory}")
 
     if("${namespace}" NOT STREQUAL "")
         message("Namespace defined! : ${namespace}")
-        set(SWIG_COMMAND "${SWIG_COMMAND}  -namespace ${namespace}")
+        set(SWIG_COMMAND "${SWIG_COMMAND} -namespace ${namespace}")
     endif()
 
     set(SWIG_COMMAND "${SWIG_COMMAND} ${swigFile}")
-
-    
-
 # D:\SWIG\swigwin-4.0.2\swig.exe -c++ -csharp -namespace ScmAudio -outdir outputDirectory scmaudio.swig"
-
 endmacro()

@@ -24,13 +24,15 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libraries")
 # ==============================================================================
 set(ENABLE_FLOAT ON CACHE BOOL "Set FFTW primitive to float")
 set(BUILD_TESTS OFF CACHE BOOL "Skip generating FFTW tests")
-add_subdirectory(${DEPENDENCIES_DIRECTORY}/fftw)
+set(FFTW_DIRECTORY ${DEPENDENCIES_DIRECTORY}/fftw)
+add_subdirectory(${FFTW_DIRECTORY})
 
 # ==============================================================================
 # LIBNYQUIST
 # ==============================================================================
 set(LIBNYQUIST_BUILD_EXAMPLE OFF CACHE BOOL "Skip generating Libnyquist examples")
-add_subdirectory(${DEPENDENCIES_DIRECTORY}/libnyquist)
+set(LIBNYQUIST_DIRECTORY ${DEPENDENCIES_DIRECTORY}/libnyquist)
+add_subdirectory(${LIBNYQUIST_DIRECTORY})
 set_target_properties(libnyquist
     PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${SOLUTION_OUTPUT_DIRECTORY}"
@@ -42,9 +44,16 @@ set_target_properties(libnyquist
 # RTAUDIO
 # ==============================================================================
 set(RTAUDIO_BUILD_TESTING OFF CACHE BOOL "Skip generating RtAudio tests")
-add_subdirectory(${DEPENDENCIES_DIRECTORY}/rtaudio)
+set(RTAUDIO_DIRECTORY ${DEPENDENCIES_DIRECTORY}/rtaudio)
+add_subdirectory(${RTAUDIO_DIRECTORY})
 
 # ==============================================================================
 # SCMAUDIO
 # ==============================================================================
-add_subdirectory(${SOLUTION_ROOT}/scmaudio) 
+set(SCMAUDIO_DIRECTORY ${SOLUTION_ROOT}/scmaudio)
+add_subdirectory(${SCMAUDIO_DIRECTORY})
+
+# ==============================================================================
+# TESTS
+# ==============================================================================
+add_subdirectory(tests)
