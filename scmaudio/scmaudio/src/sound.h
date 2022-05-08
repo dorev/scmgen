@@ -25,6 +25,7 @@ class Sound
 public:
     Sound(AudioEngine& engine, const String& path)
         : _engine(engine)
+        , _path(path)
     {
     }
 

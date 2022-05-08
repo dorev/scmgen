@@ -1,11 +1,11 @@
 # https://preshing.com/20170522/learn-cmakes-scripting-language-in-15-minutes/
 
-macro (InitCpp17Project projectName)
-    set(CMAKE_CXX_STANDARD 17)
+macro (InitCppProject cppStandard projectName)
+    set(CMAKE_CXX_STANDARD ${cppStandard})
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
     project(${projectName} LANGUAGES CXX)
-endmacro(InitCpp17Project)
+endmacro(InitCppProject)
 
 # ==============================================================================
 macro (GatherSources outputVariable)

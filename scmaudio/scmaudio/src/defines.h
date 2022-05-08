@@ -1,9 +1,13 @@
 #pragma once
 
-#ifdef SCMAUDIO_EXPORT
-    #define SCMAUDIO_API __declspec(dllexport)
+#ifdef SCMAUDIO_DLL
+    #ifdef SCMAUDIO_EXPORT
+        #define SCMAUDIO_API __declspec(dllexport)
+    #else
+        #define SCMAUDIO_API __declspec(dllimport)
+    #endif
 #else
-    #define SCMAUDIO_API __declspec(dllimport)
+    #define SCMAUDIO_API
 #endif
 
 #define DELETE_COPY_CONSTRUCTOR(Class) \

@@ -26,8 +26,19 @@ protected:
 };
 
 
-TEST_F(Tests, IsEmpty)
+TEST_F(Tests, ListDevices)
 {
+    AudioEngine engine;
+    EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
+
+    auto deviceListResult = engine.ListAudioDevices();
+    if (deviceListResult.HasError())
+        FAIL() << deviceListResult.GetError().GetDescription();
+
+    const auto deviceList = deviceListResult.GetValue();
+
+    for (const auto& device : deviceList)
+        std::cout << device.id << ": " << device.name << " is " << device.GetFlowString() << '\n';
 }
 
 } // namespace MyCode

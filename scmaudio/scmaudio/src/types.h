@@ -1,6 +1,8 @@
 #pragma once
 
+#if _HAS_CXX17
 #include <filesystem>
+#endif
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -109,7 +111,7 @@ using SharedPtr = std::shared_ptr<T>;
 template <class T, class... Args>
 SharedPtr<T> MakeShared(Args... args)
 {
-    return std::make_shared<T>(std::forward(args)...);
+    return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
 template <class T>
@@ -121,7 +123,7 @@ using UniquePtr = std::unique_ptr<T>;
 template <class T, class... Args>
 UniquePtr<T> MakeUnique(Args... args)
 {
-    return std::make_unique<T>(std::forward(args)...);
+    return std::make_unique<T>(std::forward<Args>(args)...);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -137,8 +139,10 @@ using ConditionVariable = std::condition_variable;
 
 using Mutex = std::mutex;
 
+#if _HAS_CXX17
 template <class... MutexTypes>
 using ScopedLock = std::scoped_lock<MutexTypes...>;
+#endif
 
 using UniqueLock = std::unique_lock<Mutex>;
 

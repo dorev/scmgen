@@ -1,4 +1,4 @@
-project(Tests)
+InitCppProject(17 Tests)
 
 add_executable(${PROJECT_NAME}
     main.cpp

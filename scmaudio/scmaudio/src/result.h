@@ -3,6 +3,9 @@
 #include "error.h"
 #include "types.h"
 
+namespace ScmAudio
+{
+
 static constexpr Error Success(ErrorCode::NoError);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,3 +90,5 @@ protected:
     Error _error;
     ValueType _value;
 };
+
+} // namespace ScmAudio

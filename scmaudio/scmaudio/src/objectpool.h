@@ -1,5 +1,8 @@
 #include "types.h"
 
+namespace ScmAudio
+{
+
 template <class T> class ObjectPool;
 
 template <class T>
@@ -23,6 +26,7 @@ private:
         _next = next;
     };
 
+private:
     T* _next;
 };
 
@@ -93,6 +97,14 @@ private:
         return reinterpret_cast<uintptr_t>(object);
     }
 
-    std::vector<T> _objects;
+    Vector _objects;
     T* _firstAvailable; 
 };
+
+//
+//
+// Need a lockless refcounted pool!
+//
+//
+
+} // namespace ScmAudio
