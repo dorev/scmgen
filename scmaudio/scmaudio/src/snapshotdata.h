@@ -5,10 +5,10 @@ namespace ScmAudio
 
 struct SnapshotData
 {
-    float notePresence[12];
-    float octaveEnergy[8];
-    float tempo;
-    float peakVolume;
+    F32 notePresence[12];
+    F32 octaveEnergy[8];
+    F32 tempo;
+    F32 peakVolume;
 };
 
 } // namespace ScmAudio

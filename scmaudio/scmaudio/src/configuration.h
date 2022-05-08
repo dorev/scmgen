@@ -7,10 +7,10 @@ namespace ScmAudio
 
 struct Configuration
 {
-    float notePresenceThreshold; // dB
-    float beatDetectionThreshold; // dB
-    uint32 beatDetectionWindow; // ms
-    uint32 fftWindow; // samples
+    F32 notePresenceThreshold; // dB
+    F32 beatDetectionThreshold; // dB
+    U32 beatDetectionWindow; // ms
+    U32 fftWindow; // samples
 };
 
 } // namespace ScmAudio
