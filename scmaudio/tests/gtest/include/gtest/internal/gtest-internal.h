@@ -770,7 +770,7 @@ GTEST_API_ void RegisterTypeParameterizedTestSuiteInstantiation(
 // registers *all combinations* of 'Tests' and 'Types' with Google
 // Test.  The return value is insignificant - we just need to return
 // something such that we can call this function in a namespace scope.
-template <GTEST_TEMPLATE_ Fixture, typename Tests, typename Types>
+template <GTEST_TEMPLATE_ Fixture, typename ScmAudioTests, typename Types>
 class TypeParameterizedTestSuite {
  public:
   static bool Register(const char* prefix, CodeLocation code_location,
@@ -791,14 +791,14 @@ class TypeParameterizedTestSuite {
     }
     const CodeLocation& test_location = state->GetCodeLocation(test_name);
 
-    typedef typename Tests::Head Head;
+    typedef typename ScmAudioTests::Head Head;
 
     // First, register the first test in 'Test' for each type in 'Types'.
     TypeParameterizedTest<Fixture, Head, Types>::Register(
         prefix, test_location, case_name, test_names, 0, type_names);
 
     // Next, recurses (at compile time) with the tail of the test list.
-    return TypeParameterizedTestSuite<Fixture, typename Tests::Tail,
+    return TypeParameterizedTestSuite<Fixture, typename ScmAudioTests::Tail,
                                       Types>::Register(prefix, code_location,
                                                        state, case_name,
                                                        SkipComma(test_names),

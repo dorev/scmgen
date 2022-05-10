@@ -14,6 +14,24 @@ public:
     static constexpr U64 RtAudioNotInitialized = ScmAudioErrors | 1;
     static constexpr U64 AudioEngineInError = ScmAudioErrors | 2;
     static constexpr U64 UnableToProbeDevice = ScmAudioErrors | 3;
+    static constexpr U64 NoValidDeviceAvailable = ScmAudioErrors | 4;
+    static constexpr U64 UnsupportedInputSamplingRate = ScmAudioErrors | 5;
+    static constexpr U64 UnsupportedOutputSamplingRate = ScmAudioErrors | 6;
+    static constexpr U64 UnsupportedBufferSize = ScmAudioErrors | 7;
+    static constexpr U64 EngineAlreadyRunning = ScmAudioErrors | 8;
+
+    static constexpr U64 RtAudioErrors = 65ULL << 32;
+    static constexpr U64 WARNING = RtAudioErrors | 0;
+    static constexpr U64 UNKNOWN_ERROR = RtAudioErrors | 1;
+    static constexpr U64 NO_DEVICES_FOUND = RtAudioErrors | 2;
+    static constexpr U64 INVALID_DEVICE = RtAudioErrors | 3;
+    static constexpr U64 DEVICE_DISCONNECT = RtAudioErrors | 4;
+    static constexpr U64 MEMORY_ERROR = RtAudioErrors | 5;
+    static constexpr U64 INVALID_PARAMETER = RtAudioErrors | 6;
+    static constexpr U64 INVALID_USE = RtAudioErrors | 7;
+    static constexpr U64 DRIVER_ERROR = RtAudioErrors | 8;
+    static constexpr U64 SYSTEM_ERROR = RtAudioErrors | 9;
+    static constexpr U64 THREAD_ERROR = RtAudioErrors | 10;
 
     static constexpr U64 GenericCategory = 0ULL << 32;
     static constexpr U64 NoError = GenericCategory | 0;

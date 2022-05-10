@@ -4,29 +4,11 @@
 namespace ScmAudio
 {
 
-class Tests : public ::testing::Test
+class ScmAudioTests : public ::testing::Test
 {
-protected:
-
-    Tests()
-    {
-    }
-
-    ~Tests() override
-    {
-    }
-
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
 };
 
-
-TEST_F(Tests, ListDevices)
+TEST_F(ScmAudioTests, ListDevices)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
@@ -36,9 +18,20 @@ TEST_F(Tests, ListDevices)
         FAIL() << deviceListResult.GetError().GetDescription();
 
     const auto deviceList = deviceListResult.GetValue();
-
     for (const auto& device : deviceList)
-        std::cout << device.id << ": " << device.name << " is " << device.GetFlowString() << '\n';
+        std::cout << device.id << ": (" << device.GetFlowString() << ") " << device.name << '\n';
+}
+
+TEST_F(ScmAudioTests, PlaySine)
+{
+}
+
+TEST_F(ScmAudioTests, LoopbackCapture)
+{
+}
+
+TEST_F(ScmAudioTests, PlayMp3)
+{
 }
 
 } // namespace MyCode

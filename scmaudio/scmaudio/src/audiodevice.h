@@ -10,7 +10,7 @@ namespace ScmAudio
 
 struct SCMAUDIO_API AudioDevice
 {
-    enum Flow
+    enum class Flow
     {
         Invalid,
         Input,
@@ -18,21 +18,22 @@ struct SCMAUDIO_API AudioDevice
         Duplex
     };
 
-    String GetFlowString() const
-    {
-        switch (flow)
-        {
-        case Input: return "Input";
-        case Output: return "Output";
-        case Duplex: return "Duplex";
-        default: return "Invalid";
-        }
-    }
+    U32 id;
+    bool supported;
+    Flow flow;
+    U32 preferredSampleRate;
+    U32 inputChannels;
+    U32 outputChannels;
+#pragma warning(push)
+#pragma warning(disable:4251)
+    Vector<U32> supportedSampleRates;
+    String name;
+#pragma warning(pop)
 
     AudioDevice()
         : id(InvalidId)
         , supported(false)
-        , flow(Invalid)
+        , flow(Flow::Invalid)
         , inputChannels(0)
         , outputChannels(0)
         , name("")
@@ -40,12 +41,16 @@ struct SCMAUDIO_API AudioDevice
     {}
 
     AudioDevice(const RtAudio::DeviceInfo& rtAudioDevice, U32 deviceIndex)
+        : id(InvalidId)
+        , supported(false)
+        , flow(Flow::Invalid)
+        , inputChannels(0)
+        , outputChannels(0)
+        , name("")
+        , preferredSampleRate(0)
     {
         if (rtAudioDevice.probed == false)
-        {
-            id = InvalidId;
             return;
-        }
 
         id = deviceIndex;
         name = rtAudioDevice.name;
@@ -58,11 +63,11 @@ struct SCMAUDIO_API AudioDevice
             supportedSampleRates.push_back(sampleRate);
 
         if (inputChannels == 0 && outputChannels > 0)
-            flow = Output;
+            flow = Flow::Output;
         else if (inputChannels > 0 && outputChannels == 0)
-            flow = Input;
+            flow = Flow::Input;
         else
-            flow = Duplex;
+            flow = Flow::Duplex;
     }
 
     bool operator==(const AudioDevice& other) const
@@ -81,17 +86,21 @@ struct SCMAUDIO_API AudioDevice
         return !(*this == other);
     }
 
-    U32 id;
-    bool supported;
-    Flow flow;
-    U32 preferredSampleRate;
-    U32 inputChannels;
-    U32 outputChannels;
-#pragma warning(push)
-#pragma warning(disable:4251)
-    Vector<U32> supportedSampleRates;
-    String name;
-#pragma warning(pop)
+    String GetFlowString() const
+    {
+        switch (flow)
+        {
+        case Flow::Input: return "Input";
+        case Flow::Output: return "Output";
+        case Flow::Duplex: return "Duplex";
+        default: return "Invalid";
+        }
+    }
+
+    bool IsValid()
+    {
+        return id != InvalidId && flow != Flow::Invalid;
+    }
 };
 
 } // namespace ScmAudio

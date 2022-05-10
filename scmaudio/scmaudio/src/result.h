@@ -6,6 +6,8 @@
 namespace ScmAudio
 {
 
+#define RETURN_ON_ERROR(result) if(result.HasError()) { return result.GetError(); }
+
 static constexpr Error Success(ErrorCode::NoError);
 
 ///////////////////////////////////////////////////////////////////////////////

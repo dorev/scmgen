@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audioengine.h"
+#include "utils.h"
 
 namespace ScmAudio
 {
@@ -8,7 +9,9 @@ namespace ScmAudio
 // http://web.mit.edu/carrien/Public/speechlab/marc_code/ADAPT_VC/rtaudio/doc/html/index.html
 
 AudioEngine::AudioEngine()
-    : _maxPolyphony(32)
+    : _bufferSize(1024)
+    , _maxPolyphony(32)
+    , _samplingRate(44100)
     , _status(Stopped)
     , _rtAudio(nullptr)
     , _rtAudioError(RtAudioErrorType::RTAUDIO_NO_ERROR)
@@ -45,7 +48,7 @@ bool AudioEngine::InitializeRtAudio()
 
 Result<> AudioEngine::StopRtAudio()
 {
-    if (_rtAudio == nullptr || StatusIs(Stopped))
+    if (_rtAudio == nullptr)
         return MAKE_ERROR(RtAudioNotInitialized);
 
     if (StatusIs(InError))
@@ -82,13 +85,9 @@ Result<const Vector<AudioDevice>> AudioEngine::ListAudioDevices()
     {
         rtDevice = _rtAudio->getDeviceInfo(i);
         if (StatusIsNot(InError) && rtDevice.probed)
-        {
             deviceList.emplace_back(rtDevice, i);
-        }
         else
-        {
             return MAKE_ERROR(UnableToProbeDevice);
-        }
     }
 
     return deviceList;
@@ -99,12 +98,12 @@ Result<> AudioEngine::SetInputDevice(const AudioDevice& device)
     if (device.supported == false)
         return MAKE_ERROR(DeviceNotSupported);
 
-    if (device != _inputDevice && StatusIs(Running))
+    if (device != _inputDevice)
     {
-        if (StopRtAudio())
-        {
-            _inputDevice = device;
-        }
+        if (StatusIsNot(Stopped))
+            return MAKE_ERROR(EngineAlreadyRunning);
+
+        _inputDevice = device;
     }
 
     return Success;
@@ -115,28 +114,97 @@ Result<> AudioEngine::SetOutputDevice(const AudioDevice& device)
     if (device.supported == false)
         return MAKE_ERROR(DeviceNotSupported);
 
+    if (device != _outputDevice)
+    {
+        if (StatusIsNot(Stopped))
+            return MAKE_ERROR(EngineAlreadyRunning);
+
+        _outputDevice = device;
+    }
+
     return Success;
 }
 
-Result<> AudioEngine::SetMaxPolyphony(U32 maxPolyphony)
+AudioEngine& AudioEngine::SetBufferSize(U32 bufferSize)
+{
+    _bufferSize = bufferSize;
+    return *this;
+}
+
+AudioEngine& AudioEngine::SetMaxPolyphony(U32 maxPolyphony)
 {
     _maxPolyphony = maxPolyphony;
-    return Success;
+    return *this;
+}
+
+AudioEngine& AudioEngine::SetSamplingRate(U32 samplingRate)
+{
+    _samplingRate = samplingRate;
+    return *this;
 }
 
 Result<> AudioEngine::Ignite()
 {
+    if (!InitializeRtAudio())
+        return MAKE_ERROR(RtAudioNotInitialized);
+
+    if (!_inputDevice.IsValid() && !_outputDevice.IsValid())
+        return MAKE_ERROR(NoValidDeviceAvailable);
+
+    Result<> samplingRateSelectionResult = SelectSamplingRate();
+    RETURN_ON_ERROR(samplingRateSelectionResult);
+
+
+    RtAudio::StreamParameters inputParameters;
+    RtAudio::StreamParameters outputParameters;
+    SetDeviceParameters(_outputDevice, AudioDevice::Flow::Output, outputParameters);
+    SetDeviceParameters(_inputDevice, AudioDevice::Flow::Input, inputParameters);
+
+    U32 bufferSizeTmp = _bufferSize;
+    RtAudioErrorType openStreamResult = _rtAudio->openStream(
+        &outputParameters,
+        &inputParameters,
+        RTAUDIO_FLOAT32,
+        _samplingRate,
+        &bufferSizeTmp,
+        &ScmAudioCallback,
+        ToVoidPtr(this)
+    );
+
+    if (openStreamResult != RTAUDIO_NO_ERROR)
+        return RtAudioHelper::ErrorConverter(openStreamResult);
+
+    if (bufferSizeTmp != _bufferSize)
+        return MAKE_ERROR(UnsupportedBufferSize);
+
     return Success;
 }
 
-void AudioEngine::AudioCallback(void* outputBuffer, void* inputBuffer, U32 nFrames, F64 streamTime, RtAudioStreamStatus status, void* userData)
+Result<> AudioEngine::SelectSamplingRate()
 {
-    UNUSED(outputBuffer);
-    UNUSED(inputBuffer);
-    UNUSED(nFrames);
-    UNUSED(streamTime);
-    UNUSED(status);
-    UNUSED(userData);
+    if (!_inputDevice.IsValid() && !_outputDevice.IsValid())
+        return MAKE_ERROR(NoValidDeviceAvailable);
+
+    if (_inputDevice.IsValid() && !Contains(_inputDevice.supportedSampleRates, _samplingRate))
+        return MAKE_ERROR(UnsupportedInputSamplingRate);
+
+    if (_outputDevice.IsValid() && !Contains(_outputDevice.supportedSampleRates, _samplingRate))
+        return MAKE_ERROR(UnsupportedOutputSamplingRate);
+
+    return Success;
+}
+
+void AudioEngine::SetDeviceParameters(const AudioDevice& device, AudioDevice::Flow flow, RtAudio::StreamParameters& parameters)
+{
+    if (device.id == InvalidId)
+    {
+        // Reset parameters if device is invalid
+        parameters = RtAudio::StreamParameters();
+        return;
+    }
+
+    parameters.deviceId = device.id;
+    parameters.nChannels = (flow == AudioDevice::Flow::Input) ? device.inputChannels : device.outputChannels;
 }
 
 } // namespace ScmAudio

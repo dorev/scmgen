@@ -90,7 +90,7 @@ private:
     Error Update(const ValueType& value, AsyncResultState state, bool lock = false)
     {
         if(_resultIsAlreadySet)
-            return Error{ErrorCode::AsyncResultLocked, "AsyncResult already set and locked"};
+            return Error(ErrorCode::AsyncResultLocked, "AsyncResult already set and locked");
         ResultType::_value = value;
         _state = state;
         return Success;
@@ -99,7 +99,7 @@ private:
     Error Update(ValueType&& value, AsyncResultState state, bool lock = false)
     {
         if(_resultIsAlreadySet)
-            return Error{ ErrorCode::AsyncResultLocked, "AsyncResult already set and locked"};
+            return Error(ErrorCode::AsyncResultLocked, "AsyncResult already set and locked");
         ResultType::_value = std::move(value);
         _state = state;
         _resultIsAlreadySet = lock;
@@ -109,7 +109,7 @@ private:
     Error Update(Error&& error, AsyncResultState state, bool lock = false)
     {
         if(_resultIsAlreadySet)
-            return Error{ ErrorCode::AsyncResultLocked, "AsyncResult already set and locked"};
+            return Error(ErrorCode::AsyncResultLocked, "AsyncResult already set and locked");
         ResultType::_error = std::move(error);
         _state = state;
         _resultIsAlreadySet = lock;
