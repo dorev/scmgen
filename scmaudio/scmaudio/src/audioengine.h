@@ -94,7 +94,7 @@ public:
 private:
     // http://web.mit.edu/carrien/Public/speechlab/marc_code/ADAPT_VC/rtaudio/doc/html/index.html
     void ErrorCallback(RtAudioErrorType error, const String& errorMessage);
-    bool InitializeRtAudio();
+    Result<> InitializeRtAudio();
     Result<> StopRtAudio();
 
     static void SetDeviceParameters(const AudioDevice& device, AudioDevice::Flow flow, RtAudio::StreamParameters& parameters);

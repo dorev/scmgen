@@ -25,8 +25,8 @@ public:
     }
 
     Result(const Result& other)
-        : _error(other._value)
-        , _value(other._error)
+        : _error(other._error)
+        , _value(other._value)
     {
     }
 

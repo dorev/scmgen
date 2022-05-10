@@ -23,9 +23,11 @@ AudioEngine::AudioEngine()
 
 AudioEngine::~AudioEngine()
 {
+    if(StatusIs(Running))
+        StopRtAudio();
 }
 
-bool AudioEngine::InitializeRtAudio()
+Result<> AudioEngine::InitializeRtAudio()
 {
     if (_rtAudio == nullptr)
     {
@@ -35,15 +37,16 @@ bool AudioEngine::InitializeRtAudio()
             std::bind(&AudioEngine::ErrorCallback, this, _1, _2)
         );
     }
-    else if(StatusIsNot(InError) && StatusIs(Running))
+
+    if(StatusIs(InError))
     {
-        // useless call, RtAudio is fine and running
+        if (_errorSource == ErrorSource::RtAudio)
+            return RtAudioHelper::ErrorConverter(_rtAudioError);
+
+        return MAKE_ERROR(RtAudioNotInitialized);
     }
-    else
-    {
-        // something is wrong, reset RtAudio
-    }
-    return StatusIs(Running);
+
+    return Success;
 }
 
 Result<> AudioEngine::StopRtAudio()
@@ -145,8 +148,9 @@ AudioEngine& AudioEngine::SetSamplingRate(U32 samplingRate)
 
 Result<> AudioEngine::Ignite()
 {
-    if (!InitializeRtAudio())
-        return MAKE_ERROR(RtAudioNotInitialized);
+    Result<> initializeResult = InitializeRtAudio();
+    if (initializeResult.HasError())
+        return initializeResult;
 
     if (!_inputDevice.IsValid() && !_outputDevice.IsValid())
         return MAKE_ERROR(NoValidDeviceAvailable);
@@ -160,6 +164,9 @@ Result<> AudioEngine::Ignite()
     SetDeviceParameters(_outputDevice, AudioDevice::Flow::Output, outputParameters);
     SetDeviceParameters(_inputDevice, AudioDevice::Flow::Input, inputParameters);
 
+    RtAudio::StreamOptions streamOptions;
+    streamOptions.flags = RTAUDIO_MINIMIZE_LATENCY;
+
     U32 bufferSizeTmp = _bufferSize;
     RtAudioErrorType openStreamResult = _rtAudio->openStream(
         &outputParameters,
@@ -167,8 +174,9 @@ Result<> AudioEngine::Ignite()
         RTAUDIO_FLOAT32,
         _samplingRate,
         &bufferSizeTmp,
-        &ScmAudioCallback,
-        ToVoidPtr(this)
+        &AudioCallback,
+        ToVoidPtr(this),
+        &streamOptions
     );
 
     if (openStreamResult != RTAUDIO_NO_ERROR)
@@ -176,6 +184,10 @@ Result<> AudioEngine::Ignite()
 
     if (bufferSizeTmp != _bufferSize)
         return MAKE_ERROR(UnsupportedBufferSize);
+
+    RtAudioErrorType startResult = _rtAudio->startStream();
+    if (startResult != RTAUDIO_NO_ERROR)
+        return RtAudioHelper::ErrorConverter(startResult);
 
     return Success;
 }
