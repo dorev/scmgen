@@ -1,12 +1,11 @@
 #pragma once
 
 #include "audioengine.h"
+#include "rtaudiohelper.h"
 #include "utils.h"
 
 namespace ScmAudio
 {
-
-// http://web.mit.edu/carrien/Public/speechlab/marc_code/ADAPT_VC/rtaudio/doc/html/index.html
 
 AudioEngine::AudioEngine()
     : _bufferSize(1024)
@@ -17,6 +16,7 @@ AudioEngine::AudioEngine()
     , _rtAudioError(RtAudioErrorType::RTAUDIO_NO_ERROR)
     , _errorSource(ErrorSource::None)
     , _errorMessage("")
+    , _soundInstancePool(16)
 {
     InitializeRtAudio();
 }
@@ -243,6 +243,13 @@ Result<SoundId> AudioEngine::LoadSound(const String& path)
 Result<> AudioEngine::PlaySound(SoundId soundId)
 {
     UNUSED(soundId);
+    const Sound& sound = _soundStore.GetSound(soundId);
+    
+    if (!sound.HasData())
+        return MAKE_ERROR(SoundNotAvailable);
+
+    SharedPtr<SoundInstance> soundInstance(_soundInstancePool.ConstructObject(sound), _soundInstancePool.GetDeleter());
+    _processedSoundInstance.push_back(soundInstance);
     return Success;
 }
 

@@ -6,6 +6,23 @@ namespace ScmAudio
 template <class T> class ObjectPool;
 
 template <class T>
+struct ObjectPoolDeleter
+{
+    ObjectPoolDeleter(ObjectPool<T>& pool)
+        : pool(pool)
+    {
+    }
+
+    void operator()(T* pointer)
+    {
+        pool.FreeObject(pointer);
+    }
+
+private:
+    ObjectPool<T>& pool;
+};
+
+template <class T>
 class Poolable
 {
 protected:
@@ -49,7 +66,6 @@ public:
         ASSERT(_firstAvailable != nullptr);
         T* tmp = _firstAvailable;
         _firstAvailable = tmp->Poolable<T>::GetNext();
-        //std::cout << "Popping object 0x" << std::hex << GetAddress(tmp) << '\n';
         return tmp;
     }
 
@@ -59,7 +75,6 @@ public:
         ASSERT(_firstAvailable != nullptr);
         T* tmp = _firstAvailable;
         _firstAvailable = tmp->Poolable<T>::GetNext();
-        //std::cout << "Popping object 0x" << std::hex << GetAddress(tmp) << " constructed with " << sizeof...(Args) << " arguments\n";
         return new (tmp) T(std::forward<Args>(args)...);
     }
 
@@ -68,37 +83,28 @@ public:
         ASSERT(object != nullptr);
         ASSERT(ObjectOwnedByPool(object));
         object->Poolable<T>::SetNext(_firstAvailable);
-        //std::cout << "Pushing object 0x" << std::hex << GetAddress(object) << '\n';
         _firstAvailable = object;
     }
 
-    bool ObjectOwnedByPool(T* object)
+    bool ObjectOwnedByPool(const T* object) const
     {
         return GetAddress(object) >= GetAddress(&_objects.front())
             && GetAddress(object) <= GetAddress(&_objects.back());
     }
 
-
-    template <class Predicate, class... Args>
-    T* Lookup(Predicate predicate, Args&&... args) const
+    ObjectPoolDeleter<T> GetDeleter()
     {
-        // Iterate over whole pool
-        for (const auto& object : _objects)
-        {
-            if(predicate(std::forward<Args>(args)...)
-                return &object;
-        }
-        return nullptr;
+        return ObjectPoolDeleter(*this);
     }
 
 private:
-    static uintptr_t GetAddress(T* object)
+    static uintptr_t GetAddress(const T* object)
     {
         return reinterpret_cast<uintptr_t>(object);
     }
 
-    Vector _objects;
-    T* _firstAvailable; 
+    Vector<T> _objects;
+    T* _firstAvailable;
 };
 
 //
