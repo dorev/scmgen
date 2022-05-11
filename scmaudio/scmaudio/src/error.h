@@ -19,6 +19,10 @@ public:
     static constexpr U64 UnsupportedOutputSamplingRate = ScmAudioErrors | 6;
     static constexpr U64 UnsupportedBufferSize = ScmAudioErrors | 7;
     static constexpr U64 EngineAlreadyRunning = ScmAudioErrors | 8;
+    static constexpr U64 SoundAlreadyLoaded = ScmAudioErrors | 9;
+    static constexpr U64 FileNotSupported = ScmAudioErrors | 10;
+    static constexpr U64 UnableToLoadSound = ScmAudioErrors | 11;
+    static constexpr U64 UnableToStoreSound = ScmAudioErrors | 12;
 
     static constexpr U64 RtAudioErrors = 65ULL << 32;
     static constexpr U64 WARNING = RtAudioErrors | 0;

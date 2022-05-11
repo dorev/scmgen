@@ -99,7 +99,7 @@ template <class T, class U>
 using Map = std::map<T, U>;
 
 template <class T,class U>
-using HashMap = std::unordered_map<T, U>;
+using UnorderedMap = std::unordered_map<T, U>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Pointers

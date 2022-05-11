@@ -97,7 +97,7 @@ struct SCMAUDIO_API AudioDevice
         }
     }
 
-    bool IsValid()
+    bool HasData()
     {
         return id != InvalidId && flow != Flow::Invalid;
     }

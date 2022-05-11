@@ -1,42 +1,31 @@
 #pragma once
 
+#include <libnyquist/Common.h>
+
 #include "types.h"
-#include "result.h"
 
 namespace ScmAudio
 {
 
-using SoundId = U32;
-using SoundInstanceId = U32;
-
-class SoundInstance
-{
-public:
-
-private:
-    SoundInstanceId _id;
-    SoundId _soundId;
-};
-
-class AudioEngine;
+using SoundId = size_t;
+using AudioDataPtr = SharedPtr<nqr::AudioData>;
 
 class Sound
 {
 public:
-    Sound(AudioEngine& engine, const String& path)
-        : _engine(engine)
-        , _path(path)
-    {
-    }
-
-    Result<> Unload();
-    SoundInstance Play();
+    Sound();
+    Sound(const String& path, const AudioDataPtr& data);
+    const Vector<F32>& GetData() const;
+    SoundId GetId() const;
+    U32 GetSize() const;
+    const String& GetPath() const;
+    bool HasData() const;
 
 private:
-    AudioEngine& _engine;
-    String _path;
     SoundId _id;
-    Vector<F32> _samples;
+    String _path;
+    AudioDataPtr _data;
 };
+
 
 } // namespace ScmAudio

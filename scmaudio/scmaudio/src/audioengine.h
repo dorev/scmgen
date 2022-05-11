@@ -5,7 +5,7 @@
 #include "audiodevice.h"
 #include "scmaudiocallback.h"
 #include "result.h"
-#include "sound.h"
+#include "soundmanager.h"
 #include "types.h"
 
 namespace ScmAudio
@@ -60,6 +60,7 @@ public:
 
     Result<> SetInputDevice(const AudioDevice&);
     Result<> SetOutputDevice(const AudioDevice&);
+    Result<> SetDefaultDevices();
 
     AudioEngine& SetBufferSize(U32);
     AudioEngine& SetMaxPolyphony(U32);
@@ -68,20 +69,8 @@ public:
     Result<> Ignite(); // "Initialize" is so boring...
     void Shutdown();
 
-    Sound& Load(const String& path);
-    Result<> Unload(SoundId);
-    Result<> Unload(Sound&);
-
-    Sound& GetSound(SoundId);
-    Sound& GetSound(const String&);
-
-    SoundInstance PlayLoaded(const Sound&);
-    SoundInstance PlayLoaded(SoundId);
-
-    AudioEngine& StopAll();
-    AudioEngine& StopAll(SoundId);
-    AudioEngine& StopAll(const Sound&);
-    AudioEngine& Stop(const SoundInstance&);
+    Result<SoundId> LoadSound(const String& path);
+    Result<> PlaySound(SoundId soundId);
 
     Status GetStatus() { return _status; }
     bool StatusIs(Status status) { return _status == status; }
@@ -91,8 +80,8 @@ public:
     const AudioDevice& GetInputDevice() { return _inputDevice; }
     const AudioDevice& GetOutputDevice() { return _outputDevice; }
 
+
 private:
-    // http://web.mit.edu/carrien/Public/speechlab/marc_code/ADAPT_VC/rtaudio/doc/html/index.html
     void ErrorCallback(RtAudioErrorType error, const String& errorMessage);
     Result<> InitializeRtAudio();
     Result<> StopRtAudio();
@@ -109,9 +98,9 @@ private:
     AudioDevice _outputDevice;
     ErrorSource _errorSource;
     RtAudioErrorType _rtAudioError;
-
 #pragma warning(push)
 #pragma warning(disable:4251)
+    SoundStore _soundStore;
     UniquePtr<RtAudio> _rtAudio;
     String _errorMessage;
 #pragma warning(pop)

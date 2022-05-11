@@ -128,6 +128,21 @@ Result<> AudioEngine::SetOutputDevice(const AudioDevice& device)
     return Success;
 }
 
+Result<> AudioEngine::SetDefaultDevices()
+{
+    if (_rtAudio == nullptr)
+        return MAKE_ERROR(RtAudioNotInitialized);
+
+    Result<const Vector<AudioDevice>> listDevicesResult = ListAudioDevices();
+    RETURN_ON_ERROR(listDevicesResult);
+
+    const Vector<AudioDevice>& deviceList = listDevicesResult.GetValue();
+    _inputDevice = deviceList[_rtAudio->getDefaultInputDevice()];
+    _outputDevice = deviceList[_rtAudio->getDefaultOutputDevice()];
+
+    return Success;
+}
+
 AudioEngine& AudioEngine::SetBufferSize(U32 bufferSize)
 {
     _bufferSize = bufferSize;
@@ -152,7 +167,7 @@ Result<> AudioEngine::Ignite()
     if (initializeResult.HasError())
         return initializeResult;
 
-    if (!_inputDevice.IsValid() && !_outputDevice.IsValid())
+    if (!_inputDevice.HasData() && !_outputDevice.HasData())
         return MAKE_ERROR(NoValidDeviceAvailable);
 
     Result<> samplingRateSelectionResult = SelectSamplingRate();
@@ -194,13 +209,13 @@ Result<> AudioEngine::Ignite()
 
 Result<> AudioEngine::SelectSamplingRate()
 {
-    if (!_inputDevice.IsValid() && !_outputDevice.IsValid())
+    if (!_inputDevice.HasData() && !_outputDevice.HasData())
         return MAKE_ERROR(NoValidDeviceAvailable);
 
-    if (_inputDevice.IsValid() && !Contains(_inputDevice.supportedSampleRates, _samplingRate))
+    if (_inputDevice.HasData() && !Contains(_inputDevice.supportedSampleRates, _samplingRate))
         return MAKE_ERROR(UnsupportedInputSamplingRate);
 
-    if (_outputDevice.IsValid() && !Contains(_outputDevice.supportedSampleRates, _samplingRate))
+    if (_outputDevice.HasData() && !Contains(_outputDevice.supportedSampleRates, _samplingRate))
         return MAKE_ERROR(UnsupportedOutputSamplingRate);
 
     return Success;
@@ -217,6 +232,18 @@ void AudioEngine::SetDeviceParameters(const AudioDevice& device, AudioDevice::Fl
 
     parameters.deviceId = device.id;
     parameters.nChannels = (flow == AudioDevice::Flow::Input) ? device.inputChannels : device.outputChannels;
+}
+
+
+Result<SoundId> AudioEngine::LoadSound(const String& path)
+{
+    return _soundStore.Load(path);
+}
+
+Result<> AudioEngine::PlaySound(SoundId soundId)
+{
+    UNUSED(soundId);
+    return Success;
 }
 
 } // namespace ScmAudio

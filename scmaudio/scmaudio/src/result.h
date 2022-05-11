@@ -58,19 +58,19 @@ public:
     {
     }
 
-    bool IsValid() const
+    bool HasData() const
     {
         return _error.GetCode() == ErrorCode::NoError;
     }
 
     explicit operator bool() const
     {
-        return IsValid();
+        return HasData();
     }
 
     bool HasError()
     {
-        return !IsValid();
+        return !HasData();
     }
 
     const Error& GetError()

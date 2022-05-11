@@ -19,4 +19,11 @@ namespace ScmAudio
         return std::find(container.begin(), container.end(), value) != container.end();
     }
 
+    template <class T>
+    U32 Hash(const T& object)
+    {
+        static std::hash<T> hasher;
+        return static_cast<U32>(hasher(object));
+    }
+
 } // namespace ScmAudio

@@ -15,6 +15,7 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
     PUBLIC
     ${RTAUDIO_DIRECTORY}
+    ${LIBNYQUIST_DIRECTORY}/include
     ${FFTW_DIRECTORY}/api
 )
 
