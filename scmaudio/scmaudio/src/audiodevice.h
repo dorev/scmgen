@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "constants.h"
+#include "utils.h"
 #include "defines.h"
 #include "RtAudio.h"
 

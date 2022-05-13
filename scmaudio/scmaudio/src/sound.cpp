@@ -1,5 +1,3 @@
-#pragma once
-
 #include "sound.h"
 #include "utils.h"
 

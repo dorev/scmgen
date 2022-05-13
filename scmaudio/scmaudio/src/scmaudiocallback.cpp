@@ -1,5 +1,3 @@
-#pragma once
-
 #include "audioengine.h"
 #include "defines.h"
 #include "utils.h"
@@ -17,7 +15,6 @@ int AudioCallback(void* outputBuffer, void* inputBuffer, U32 frameCount, F64 str
     SoundPlayer& player = engine.GetPlayer();
     U32 inputChannels = engine.GetInputDevice().inputChannels;
     U32 outputChannels = engine.GetOutputDevice().outputChannels;
-
     U32 outputBufferSize = inputChannels * sizeof(F32) * frameCount;
     memset(outputBuffer, 0, outputBufferSize);
 
@@ -47,8 +44,10 @@ int AudioCallback(void* outputBuffer, void* inputBuffer, U32 frameCount, F64 str
         }
     }
 
+    engine.OnOutputMixDone(outputBuffer, outputBufferSize, outputChannels);
+
     UNUSED(streamTime);
     return 0;
 }
 
-} // namespace ScmAudio`
+} // namespace ScmAudio

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "soundstore.h"
 #include "utils.h"
 

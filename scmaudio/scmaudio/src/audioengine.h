@@ -31,6 +31,8 @@ public:
         Running
     };
 
+    using OutputMixDoneCallback = std::function<void(void*, U32, U32)>;
+
 public:
     AudioEngine();
     ~AudioEngine();
@@ -47,9 +49,11 @@ public:
     AudioEngine& SetMaxPolyphony(U32 maxPolyphony) { _maxPolyphony = maxPolyphony; return *this; }
     AudioEngine& SetMute(bool mute = true) { _mute = mute; return *this; }
     AudioEngine& SetCapture(bool capture = true) { _capture = capture; return *this; }
+    AudioEngine& SetOutputMixDoneCallback(OutputMixDoneCallback callback) { _outputMixDoneCallback = callback; return *this; }
+
 
     Result<> Ignite(); // "Initialize" is so boring...
-    void Shutdown();
+    void Stop();
 
     Result<SoundId> LoadSound(const String& path);
     Result<SoundInstancePtr> Play(SoundId soundId);
@@ -69,6 +73,7 @@ public:
 private:
     friend int AudioCallback(void*, void*, U32, F64, RtAudioStreamStatus, void*);
     SoundPlayer& GetPlayer() { return _soundPlayer; }
+    void OnOutputMixDone(void* outputBuffer, U32 bufferSize, U32 channels);
 
     void ErrorCallback(RtAudioErrorType error, const String& errorMessage);
     Result<> InitializeRtAudio();
@@ -90,6 +95,7 @@ private:
     RtAudioErrorType _rtAudioError;
 #pragma warning(push)
 #pragma warning(disable:4251)
+    OutputMixDoneCallback _outputMixDoneCallback;
     SoundStore _soundStore;
     UniquePtr<RtAudio> _rtAudio;
     String _errorMessage;
