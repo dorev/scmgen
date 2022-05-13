@@ -10,7 +10,7 @@ class ScmAudioTests : public ::testing::Test
 
 #define FAIL_ON_ERROR(result) if(result.HasError()) { FAIL() << result.GetError().GetDescription(); }
 
-TEST_F(ScmAudioTests, ListDevices)
+TEST_F(ScmAudioTests, DISABLED_ListDevices)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
@@ -18,17 +18,12 @@ TEST_F(ScmAudioTests, ListDevices)
     auto deviceListResult = engine.ListAudioDevices();
     FAIL_ON_ERROR(deviceListResult);
 
-
     const auto deviceList = deviceListResult.GetValue();
     for (const auto& device : deviceList)
         std::cout << device.id << ": (" << device.GetFlowString() << ") " << device.name << '\n';
 }
 
-TEST_F(ScmAudioTests, PlaySine)
-{
-}
-
-TEST_F(ScmAudioTests, LoopbackCapture)
+TEST_F(ScmAudioTests, DISABLED_LoopbackCapture)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
@@ -52,6 +47,26 @@ TEST_F(ScmAudioTests, LoopbackCapture)
 
 TEST_F(ScmAudioTests, PlayMp3)
 {
+    AudioEngine engine;
+    EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
+
+    auto setDefaultResult = engine.SetDefaultDevices();
+    FAIL_ON_ERROR(setDefaultResult);
+
+    engine.SetCapture(false);
+
+    Result<SoundId> loadSoundResult = engine.LoadSound(R"(D:\Music\Limp Bizkit - Greatest Hitz\Limp Bizkit - Faith.mp3)");
+    FAIL_ON_ERROR(loadSoundResult);
+    const SoundId soundId = loadSoundResult.GetValue();
+
+    auto igniteResult = engine.Ignite();
+    FAIL_ON_ERROR(igniteResult);
+
+    engine.Play(soundId);
+
+    char input;
+    std::cout << "\nRunning ... press <enter> to quit.\n";
+    std::cin.get(input);
 }
 
 } // namespace MyCode

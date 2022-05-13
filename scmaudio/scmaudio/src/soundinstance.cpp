@@ -5,34 +5,43 @@
 namespace ScmAudio
 {
 
-SoundInstance::SoundInstance()
-    : _sound(nullptr)
-    , _position(0)
-{
-}
-
-SoundInstance::SoundInstance(const Sound& sound)
-    : _sound(&sound)
+SoundInstance::SoundInstance(const Sound* sound)
+    : _sound(sound)
     , _position(0)
 {
 }
 
 const F32* SoundInstance::GetDataBegin() const
 {
-    ASSERT(_sound != nullptr);
-    return &_sound->GetData()[_position];
+    if (_sound != nullptr)
+        return &_sound->GetData()[_position];
+    else
+        return nullptr;
 }
 
-U32 SoundInstance::SamplesLeftToPlay() const
+U32 SoundInstance::RemainingSamples() const
 {
-    ASSERT(_sound != nullptr);
-    return _sound->GetSize() - _position;
+    if (_sound != nullptr)
+        return _sound->GetSize() - _position;
+    else
+        return 0;
 }
 
-void SoundInstance::SamplesPlayed(U32 sampleCount)
+void SoundInstance::IncrementPosition(U32 frameCount)
 {
-    ASSERT(_sound != nullptr);
-    _position = std::min(_position + sampleCount, _sound->GetSize());
+    if(_sound != nullptr)
+        _position = std::min(_position + frameCount, _sound->GetSize());
+}
+
+const Sound& SoundInstance::GetSound() const
+{
+    if (_sound != nullptr)
+        return *_sound;
+    else
+    {
+        static const Sound stub;
+        return stub;
+    }
 }
 
 } // namespace ScmAudio

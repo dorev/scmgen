@@ -16,8 +16,11 @@ AudioEngine::AudioEngine()
     , _rtAudioError(RtAudioErrorType::RTAUDIO_NO_ERROR)
     , _errorSource(ErrorSource::None)
     , _errorMessage("")
-    , _soundInstancePool(16)
+    , _soundPlayer(_samplingRate, _maxPolyphony)
+    , _mute(false)
+    , _capture(true)
 {
+    StopRtAudio();
     InitializeRtAudio();
 }
 
@@ -123,6 +126,7 @@ Result<> AudioEngine::SetOutputDevice(const AudioDevice& device)
             return MAKE_ERROR(EngineAlreadyRunning);
 
         _outputDevice = device;
+        _soundPlayer.SetChannels(_outputDevice.outputChannels);
     }
 
     return Success;
@@ -143,31 +147,13 @@ Result<> AudioEngine::SetDefaultDevices()
     return Success;
 }
 
-AudioEngine& AudioEngine::SetBufferSize(U32 bufferSize)
-{
-    _bufferSize = bufferSize;
-    return *this;
-}
-
-AudioEngine& AudioEngine::SetMaxPolyphony(U32 maxPolyphony)
-{
-    _maxPolyphony = maxPolyphony;
-    return *this;
-}
-
-AudioEngine& AudioEngine::SetSamplingRate(U32 samplingRate)
-{
-    _samplingRate = samplingRate;
-    return *this;
-}
-
 Result<> AudioEngine::Ignite()
 {
     Result<> initializeResult = InitializeRtAudio();
     if (initializeResult.HasError())
         return initializeResult;
 
-    if (!_inputDevice.HasData() && !_outputDevice.HasData())
+    if (!_inputDevice.IsValid() && !_outputDevice.IsValid())
         return MAKE_ERROR(NoValidDeviceAvailable);
 
     Result<> samplingRateSelectionResult = SelectSamplingRate();
@@ -190,7 +176,7 @@ Result<> AudioEngine::Ignite()
         _samplingRate,
         &bufferSizeTmp,
         &AudioCallback,
-        ToVoidPtr(this),
+        ToPtr<void>(this),
         &streamOptions
     );
 
@@ -209,13 +195,13 @@ Result<> AudioEngine::Ignite()
 
 Result<> AudioEngine::SelectSamplingRate()
 {
-    if (!_inputDevice.HasData() && !_outputDevice.HasData())
+    if (!_inputDevice.IsValid() && !_outputDevice.IsValid())
         return MAKE_ERROR(NoValidDeviceAvailable);
 
-    if (_inputDevice.HasData() && !Contains(_inputDevice.supportedSampleRates, _samplingRate))
+    if (_inputDevice.IsValid() && !Contains(_inputDevice.supportedSampleRates, _samplingRate))
         return MAKE_ERROR(UnsupportedInputSamplingRate);
 
-    if (_outputDevice.HasData() && !Contains(_outputDevice.supportedSampleRates, _samplingRate))
+    if (_outputDevice.IsValid() && !Contains(_outputDevice.supportedSampleRates, _samplingRate))
         return MAKE_ERROR(UnsupportedOutputSamplingRate);
 
     return Success;
@@ -240,17 +226,22 @@ Result<SoundId> AudioEngine::LoadSound(const String& path)
     return _soundStore.Load(path);
 }
 
-Result<> AudioEngine::PlaySound(SoundId soundId)
+Result<SoundInstancePtr> AudioEngine::Play(SoundId soundId)
 {
-    UNUSED(soundId);
     const Sound& sound = _soundStore.GetSound(soundId);
-    
-    if (!sound.HasData())
+    if (!sound.IsValid())
         return MAKE_ERROR(SoundNotAvailable);
 
-    SharedPtr<SoundInstance> soundInstance(_soundInstancePool.ConstructObject(sound), _soundInstancePool.GetDeleter());
-    _processedSoundInstance.push_back(soundInstance);
-    return Success;
+    return _soundPlayer.AddSoundInstance(sound);
+}
+
+Result<SoundInstancePtr> AudioEngine::Play(const String& soundPath)
+{
+    const Sound& sound = _soundStore.GetSound(soundPath);
+    if (!sound.IsValid())
+        return MAKE_ERROR(SoundNotAvailable);
+
+    return _soundPlayer.AddSoundInstance(sound);
 }
 
 } // namespace ScmAudio

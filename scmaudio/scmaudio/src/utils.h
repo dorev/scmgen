@@ -4,13 +4,13 @@
 
 namespace ScmAudio
 {
-    template <class T>
-    void* ToVoidPtr(T object)
+    template <class T, class U>
+    T* ToPtr(U data)
     {
-        if constexpr (std::is_pointer<T>::value)
-            return static_cast<void*>(object);
+        if constexpr (std::is_pointer<U>::value)
+            return reinterpret_cast<T*>(data);
         else
-            return static_cast<void*>(&object);
+            return reinterpret_cast<T*>(&data);
     }
 
     template <class T, class U>

@@ -13,6 +13,8 @@ struct Configuration;
 class SCMAUDIO_API Session
 {
 public:
+
+    String Initialize();
     Vector<AudioDevice> GetCaptureDevices() const;
     Vector<AudioDevice> GetPlaybackDevices() const;
     String SetPlaybackDevice(const AudioDevice&);

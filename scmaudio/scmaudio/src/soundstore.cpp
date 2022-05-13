@@ -1,6 +1,6 @@
 #pragma once
 
-#include "soundmanager.h"
+#include "soundstore.h"
 #include "utils.h"
 
 namespace ScmAudio
@@ -14,7 +14,7 @@ Result<SoundId> SoundStore::Load(const String& path)
     if (!_loader.IsFileSupported(path))
         return MAKE_ERROR(FileNotSupported);
 
-    AudioDataPtr soundData;
+    AudioDataPtr soundData(new AudioData);
     try
     {
         _loader.Load(soundData.get(), path);
@@ -33,12 +33,14 @@ Result<SoundId> SoundStore::Load(const String& path)
 
 const Sound& SoundStore::GetSound(SoundId id) const
 {
-    static const Sound stub;
     auto it = _sounds.find(id);
     if (it == _sounds.end())
+    {
+        static const Sound stub;
         return stub;
-    else
-        return it->second;
+    }
+
+    return it->second;
 }
 
 const Sound& SoundStore::GetSound(const String& path) const

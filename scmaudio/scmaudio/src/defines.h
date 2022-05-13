@@ -16,8 +16,7 @@
     Class& operator=(const Class&) = delete; \
     Class& operator=(Class&&) = delete;
 
-#define ONLY_EXPLICIT_CONSTRUCTOR(Class) \
-    DELETE_COPY_CONSTRUCTOR(Class) \
+#define DELETE_DEFAULT_CONSTRUCTOR(Class) \
     Class() = delete; \
     Class(const Class&) = delete; \
     Class(Class&&) = delete;

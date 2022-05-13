@@ -24,6 +24,7 @@ public:
     static constexpr U64 UnableToLoadSound = ScmAudioErrors | 11;
     static constexpr U64 UnableToStoreSound = ScmAudioErrors | 12;
     static constexpr U64 SoundNotAvailable = ScmAudioErrors | 13;
+    static constexpr U64 MaxPolyphonyReached = ScmAudioErrors | 14;
 
     static constexpr U64 RtAudioErrors = 65ULL << 32;
     static constexpr U64 WARNING = RtAudioErrors | 0;

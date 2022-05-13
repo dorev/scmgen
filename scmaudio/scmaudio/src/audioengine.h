@@ -3,9 +3,10 @@
 #include <RtAudio.h>
 
 #include "audiodevice.h"
+#include "soundplayer.h"
 #include "scmaudiocallback.h"
 #include "result.h"
-#include "soundmanager.h"
+#include "soundstore.h"
 #include "soundinstance.h"
 #include "types.h"
 
@@ -36,19 +37,23 @@ public:
 
     Result<const Vector<AudioDevice>> ListAudioDevices();
 
-    Result<> SetInputDevice(const AudioDevice&);
-    Result<> SetOutputDevice(const AudioDevice&);
+    Result<> SetInputDevice(const AudioDevice& inputDevice);
+    Result<> SetOutputDevice(const AudioDevice& outputDevice);
     Result<> SetDefaultDevices();
 
-    AudioEngine& SetBufferSize(U32);
-    AudioEngine& SetMaxPolyphony(U32);
-    AudioEngine& SetSamplingRate(U32);
+    // Builder methods
+    AudioEngine& SetBufferSize(U32 bufferSize) { _bufferSize = bufferSize; return *this; }
+    AudioEngine& SetSamplingRate(U32 samplingRate) { _samplingRate = samplingRate; return *this; }
+    AudioEngine& SetMaxPolyphony(U32 maxPolyphony) { _maxPolyphony = maxPolyphony; return *this; }
+    AudioEngine& SetMute(bool mute = true) { _mute = mute; return *this; }
+    AudioEngine& SetCapture(bool capture = true) { _capture = capture; return *this; }
 
     Result<> Ignite(); // "Initialize" is so boring...
     void Shutdown();
 
     Result<SoundId> LoadSound(const String& path);
-    Result<> PlaySound(SoundId soundId);
+    Result<SoundInstancePtr> Play(SoundId soundId);
+    Result<SoundInstancePtr> Play(const String& soundPath);
 
     Status GetStatus() { return _status; }
     bool StatusIs(Status status) { return _status == status; }
@@ -58,8 +63,13 @@ public:
     const AudioDevice& GetInputDevice() { return _inputDevice; }
     const AudioDevice& GetOutputDevice() { return _outputDevice; }
 
+    bool IsMuted() const { return _outputDevice.outputChannels == 0 || _mute; }
+    bool IsCapturing() const { return _inputDevice.inputChannels > 0 && _capture; }
 
 private:
+    friend int AudioCallback(void*, void*, U32, F64, RtAudioStreamStatus, void*);
+    SoundPlayer& GetPlayer() { return _soundPlayer; }
+
     void ErrorCallback(RtAudioErrorType error, const String& errorMessage);
     Result<> InitializeRtAudio();
     Result<> StopRtAudio();
@@ -69,11 +79,13 @@ private:
 
 private:
     U32 _bufferSize;
-    U32 _maxPolyphony;
     U32 _samplingRate;
+    U32 _maxPolyphony;
     Status _status;
     AudioDevice _inputDevice;
     AudioDevice _outputDevice;
+    bool _mute;
+    bool _capture;
     ErrorSource _errorSource;
     RtAudioErrorType _rtAudioError;
 #pragma warning(push)
@@ -81,8 +93,7 @@ private:
     SoundStore _soundStore;
     UniquePtr<RtAudio> _rtAudio;
     String _errorMessage;
-    ObjectPool<SoundInstance> _soundInstancePool;
-    List<SharedPtr<SoundInstance>> _processedSoundInstance;
+    SoundPlayer _soundPlayer;
 #pragma warning(pop)
 };
 

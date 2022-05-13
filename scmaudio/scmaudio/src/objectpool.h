@@ -52,7 +52,7 @@ template <class T>
 class ObjectPool
 {
 public:
-    ObjectPool(unsigned size)
+    ObjectPool(U32 size = 0)
         : _objects(size) 
         , _firstAvailable(_objects.data())
     {
@@ -78,17 +78,22 @@ public:
         return new (tmp) T(std::forward<Args>(args)...);
     }
 
-    void FreeObject(T* object)
+    bool FreeObject(T* object)
     {
         ASSERT(object != nullptr);
-        ASSERT(ObjectOwnedByPool(object));
-        object->Poolable<T>::SetNext(_firstAvailable);
-        _firstAvailable = object;
+        if (ObjectOwnedByPool(object))
+        {
+            object->Poolable<T>::SetNext(_firstAvailable);
+            _firstAvailable = object;
+            return true;
+        }
+        return false;
     }
 
     bool ObjectOwnedByPool(const T* object) const
     {
-        return GetAddress(object) >= GetAddress(&_objects.front())
+        return object != nullptr && !_objects.empty()
+            && GetAddress(object) >= GetAddress(&_objects.front())
             && GetAddress(object) <= GetAddress(&_objects.back());
     }
 
