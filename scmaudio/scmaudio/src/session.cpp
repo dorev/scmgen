@@ -1,5 +1,4 @@
 #include "session.h"
-
 #include "audiodevice.h"
 #include "configuration.h"
 #include "snapshotdata.h"

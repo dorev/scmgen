@@ -1,5 +1,3 @@
-#pragma once
-
 #include "audioengine.h"
 #include "rtaudiohelper.h"
 #include "utils.h"
@@ -14,6 +12,7 @@ AudioEngine::AudioEngine()
     , _status(Stopped)
     , _rtAudio(nullptr)
     , _rtAudioError(RtAudioErrorType::RTAUDIO_NO_ERROR)
+    , _outputMixDoneCallback(nullptr)
     , _errorSource(ErrorSource::None)
     , _errorMessage("")
     , _soundPlayer(_samplingRate, _maxPolyphony)
@@ -25,6 +24,11 @@ AudioEngine::AudioEngine()
 }
 
 AudioEngine::~AudioEngine()
+{
+    Stop();
+}
+
+void AudioEngine::Stop()
 {
     if(StatusIs(Running))
         StopRtAudio();
@@ -242,6 +246,12 @@ Result<SoundInstancePtr> AudioEngine::Play(const String& soundPath)
         return MAKE_ERROR(SoundNotAvailable);
 
     return _soundPlayer.AddSoundInstance(sound);
+}
+
+void AudioEngine::OnOutputMixDone(void* outputBuffer, U32 bufferSize, U32 channels)
+{
+    if (_outputMixDoneCallback != nullptr)
+        _outputMixDoneCallback(outputBuffer, bufferSize, channels);
 }
 
 } // namespace ScmAudio

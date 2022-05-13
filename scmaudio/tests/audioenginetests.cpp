@@ -4,7 +4,7 @@
 namespace ScmAudio
 {
 
-class ScmAudioTests : public ::testing::Test
+class AudioEngineTests : public ::testing::Test
 {
 };
 
@@ -35,7 +35,7 @@ void SelectDevice(AudioEngine& engine)
     FAIL_ON_ERROR(setOutputResult);
 }
 
-TEST_F(ScmAudioTests, ListDevices)
+TEST_F(AudioEngineTests, ListDevices)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
@@ -49,7 +49,7 @@ TEST_F(ScmAudioTests, ListDevices)
         std::cout << device.id << ": (" << device.GetFlowString() << ") " << device.name << '\n';
 }
 
-TEST_F(ScmAudioTests, DISABLED_SelectDevicesForTests)
+TEST_F(AudioEngineTests, DISABLED_SelectDevicesForTests)
 {
     while (!DeviceIdIsValid(gOutputDevice))
     {
@@ -65,7 +65,7 @@ TEST_F(ScmAudioTests, DISABLED_SelectDevicesForTests)
     std::cout << '\n';
 }
 
-TEST_F(ScmAudioTests, LoopbackCapture)
+TEST_F(AudioEngineTests, LoopbackCapture)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
@@ -77,7 +77,7 @@ TEST_F(ScmAudioTests, LoopbackCapture)
     PRESS_ENTER_TO_QUIT;
 }
 
-TEST_F(ScmAudioTests, PlayMp3)
+TEST_F(AudioEngineTests, PlayMp3)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
@@ -97,7 +97,7 @@ TEST_F(ScmAudioTests, PlayMp3)
     PRESS_ENTER_TO_QUIT;
 }
 
-TEST_F(ScmAudioTests, PlayMp3Twice)
+TEST_F(AudioEngineTests, PlayMp3Twice)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
@@ -119,7 +119,7 @@ TEST_F(ScmAudioTests, PlayMp3Twice)
     PRESS_ENTER_TO_QUIT;
 }
 
-TEST_F(ScmAudioTests, PlayMp3MixedWithCapture)
+TEST_F(AudioEngineTests, PlayMp3MixedWithCapture)
 {
     AudioEngine engine;
     EXPECT_EQ(engine.GetStatus(), AudioEngine::Stopped);
