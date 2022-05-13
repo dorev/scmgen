@@ -20,6 +20,7 @@ public:
     void WriteFrames(void* outputBuffer, U32 frameCount);
 
     void SetChannels(U32 channels) { _channels = channels; }
+    U32 GetChannels() const { return _channels; }
     U32 GetActiveSoundsCount() const { return _activeSoundsCount; }
 
 private:

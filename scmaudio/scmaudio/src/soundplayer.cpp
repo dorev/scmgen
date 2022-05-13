@@ -46,6 +46,7 @@ void SoundPlayer::WriteFrames(void* outputBuffer, U32 framesToWrite)
         return;
 
     F32* buffer = ToPtr<F32>(outputBuffer);
+    U32 writtenInstancesCount = 0;
 
     for (SoundInstancePtr& soundInstancePtr : _activeSounds)
     {
@@ -53,23 +54,70 @@ void SoundPlayer::WriteFrames(void* outputBuffer, U32 framesToWrite)
             continue;
 
         SoundInstance& soundInstance = *soundInstancePtr;
-        ASSERT(_channels == soundInstance.GetSound().GetChannels());
+        U32 remainingSamples = soundInstance.RemainingSamples();
 
-        U32 remainingFrames = soundInstance.RemainingSamples() / soundInstance.GetSound().GetChannels();
-        if (remainingFrames == 0)
+        // Discard fully written instances
+        if (remainingSamples == 0)
         {
             soundInstancePtr = nullptr;
             _activeSoundsCount--;
             continue;
         }
 
-        U32 samplesToWrite = std::min(remainingFrames, framesToWrite) * _channels;
+        const U32 outputChannels = GetChannels();
+        const U32 soundChannels = soundInstance.GetSound().GetChannels();
+        U32 remainingSoundFrames = remainingSamples / soundChannels;
+        U32 soundSamplesToWrite = std::min(remainingSoundFrames, framesToWrite) * soundChannels;
         const F32* soundData = soundInstance.GetDataBegin();
 
-        for (U32 sample = 0; sample < samplesToWrite; ++sample)
-            buffer[sample] += soundData[sample];
+        // Sound and output channel count match
+        if (outputChannels == soundChannels)
+        {
+            for (U32 sample = 0; sample < soundSamplesToWrite; ++sample)
+                buffer[sample] += soundData[sample];
+        }
+        // Output has more channels than sound
+        // Round-robin sound channels into output channels
+        else if (outputChannels > soundChannels)
+        {
+            for (U32 frame = 0; frame < framesToWrite; ++frame)
+            {
+                for (U32 outputChannel = 0; outputChannel < outputChannels; outputChannel++)
+                {
+                    U32 bufferSampleIndex = (frame * outputChannels) + outputChannel;
+                    U32 soundSampleIndex = frame + (outputChannel % soundChannels);
+                    buffer[bufferSampleIndex] += soundData[soundSampleIndex];
+                }
+            }
+        }
+        // Sound has more channels than output
+        // Merge sound channels to mono and replicate on output channels (to improve...)
+        else if (soundChannels > outputChannels)
+        {
+            for (U32 frame = 0; frame < framesToWrite; ++frame)
+            {
+                F32 mergedSample = 0.0f;
 
-        soundInstance.IncrementPosition(samplesToWrite);
+                for (U32 soundChannel = 0; soundChannel < soundChannels; soundChannel++)
+                {
+                    U32 soundSampleIndex = (frame * soundChannels) + soundChannel;
+                    mergedSample += soundData[soundSampleIndex];
+                }
+
+                mergedSample /= soundChannels;
+
+                for (U32 outputChannel = 0; outputChannel < outputChannels; outputChannel++)
+                {
+                    U32 bufferSampleIndex = (frame * outputChannels) + outputChannel;
+                    buffer[bufferSampleIndex] += mergedSample;
+                }
+            }
+        }
+
+        soundInstance.IncrementPosition(soundSamplesToWrite);
+
+        if ((++writtenInstancesCount) == _activeSoundsCount)
+            break;
     }
 }
 

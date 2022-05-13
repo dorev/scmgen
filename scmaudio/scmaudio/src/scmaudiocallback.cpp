@@ -2,6 +2,7 @@
 
 #include "audioengine.h"
 #include "defines.h"
+#include "utils.h"
 
 namespace ScmAudio
 {
@@ -14,8 +15,10 @@ int AudioCallback(void* outputBuffer, void* inputBuffer, U32 frameCount, F64 str
 
     AudioEngine& engine = *reinterpret_cast<AudioEngine*>(userData);
     SoundPlayer& player = engine.GetPlayer();
+    U32 inputChannels = engine.GetInputDevice().inputChannels;
+    U32 outputChannels = engine.GetOutputDevice().outputChannels;
 
-    U32 outputBufferSize = engine.GetInputDevice().inputChannels * sizeof(F32) * frameCount;
+    U32 outputBufferSize = inputChannels * sizeof(F32) * frameCount;
     memset(outputBuffer, 0, outputBufferSize);
 
     if (!engine.IsMuted())
@@ -23,10 +26,20 @@ int AudioCallback(void* outputBuffer, void* inputBuffer, U32 frameCount, F64 str
 
     if (engine.IsCapturing())
     {
-        if (player.GetActiveSoundsCount() > 0)
+        if (player.GetActiveSoundsCount() > 0 || inputChannels != outputChannels)
         {
-            for (U32 frame = 0; frame < frameCount; frame++)
-                reinterpret_cast<F32*>(outputBuffer)[frame] += reinterpret_cast<F32*>(inputBuffer)[frame];
+            F32* castOutputBuffer = ToPtr<F32>(outputBuffer);
+            F32* castInputBuffer = ToPtr<F32>(inputBuffer);
+
+            for (U32 frame = 0; frame < frameCount; ++frame)
+            {
+                for (U32 outputChannel = 0; outputChannel < outputChannels; outputChannel++)
+                {
+                    U32 outputSampleIndex = (frame * outputChannels) + outputChannel;
+                    U32 inputSampleIndex = (frame * inputChannels) + (outputChannel % inputChannels);
+                    castOutputBuffer[outputSampleIndex] += castInputBuffer[inputSampleIndex];
+                }
+            }
         }
         else
         {
