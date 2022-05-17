@@ -70,27 +70,27 @@ public:
 // Error
 ///////////////////////////////////////////////////////////////////////////////
 
-#define MAKE_ERROR(errorName) Error(ErrorCode::##errorName, #errorName)
+#define MAKE_ERROR(errorName) Error(ErrorCode::errorName, #errorName)
 
 class Error
 {
 public:
 
     constexpr Error()
-        : _code(ErrorCode::UninitializedError)
-        , _description("Uninitialized Error")
+        : _description("Uninitialized Error")
+        , _code(ErrorCode::UninitializedError)
     {
     }
 
     constexpr Error(U64 code, const char* description)
-        : _code(code)
-        , _description(description)
+        : _description(description)
+        , _code(code)
     {
     }
 
     constexpr Error(U64 code)
-        : _code(code)
-        , _description(nullptr)
+        : _description(nullptr)
+        , _code(code)
     {
     }
 

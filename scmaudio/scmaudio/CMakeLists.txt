@@ -19,18 +19,16 @@ target_include_directories(${PROJECT_NAME}
     ${FFTW_DIRECTORY}/api
 )
 
-set(DEBUG_OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY}/Debug)
-set(RELEASE_OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY}/Release)
+# set(DEBUG_OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY}/Debug)
+# set(RELEASE_OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY}/Release)
+set(OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY})
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     readerwriterqueue
-    $<$<CONFIG:Debug>:${DEBUG_OUTPUT_DIRECTORY}/fftw3f.lib>
-    $<$<CONFIG:Debug>:${DEBUG_OUTPUT_DIRECTORY}/libnyquist_d.lib>
-    $<$<CONFIG:Debug>:${DEBUG_OUTPUT_DIRECTORY}/rtaudiod.lib>
-    $<$<CONFIG:Release>:${RELEASE_OUTPUT_DIRECTORY}/fftw3f.lib>
-    $<$<CONFIG:Release>:${RELEASE_OUTPUT_DIRECTORY}/libnyquist.lib>
-    $<$<CONFIG:Release>:${RELEASE_OUTPUT_DIRECTORY}/rtaudio.lib>
+    rtaudio
+    libnyquist
+    fftw3f
 )
 
 target_compile_options(${PROJECT_NAME}

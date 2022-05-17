@@ -7,17 +7,17 @@ namespace ScmAudio
 
 AudioEngine::AudioEngine()
     : _bufferSize(1024)
-    , _maxPolyphony(32)
     , _samplingRate(44100)
+    , _maxPolyphony(32)
     , _status(Stopped)
-    , _rtAudio(nullptr)
-    , _rtAudioError(RtAudioErrorType::RTAUDIO_NO_ERROR)
-    , _outputMixDoneCallback(nullptr)
-    , _errorSource(ErrorSource::None)
-    , _errorMessage("")
-    , _soundPlayer(_samplingRate, _maxPolyphony)
     , _mute(false)
     , _capture(true)
+    , _errorSource(ErrorSource::None)
+    , _rtAudioError(RtAudioErrorType::RTAUDIO_NO_ERROR)
+    , _outputMixDoneCallback(nullptr)
+    , _rtAudio(nullptr)
+    , _errorMessage("")
+    , _soundPlayer(_samplingRate, _maxPolyphony)
 {
     StopRtAudio();
     InitializeRtAudio();

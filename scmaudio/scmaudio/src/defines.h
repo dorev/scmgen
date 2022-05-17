@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef SCMAUDIO_DLL
+#if defined(SCMAUDIO_DLL) && defined(_WIN32)
     #ifdef SCMAUDIO_EXPORT
         #define SCMAUDIO_API __declspec(dllexport)
     #else

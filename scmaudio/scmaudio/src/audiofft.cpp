@@ -6,11 +6,11 @@ namespace ScmAudio
 
 AudioFft::AudioFft(U32 windowSize, U32 samplingRate)
     : _windowSize(windowSize)
-    , _samplingRate(samplingRate)
+//    , _samplingRate(samplingRate)
     , _binRange(static_cast<F32>(samplingRate) / static_cast<F32>(GetInputBufferSize()))
-    , _plan(FftwDftPlan(static_cast<U32>(_windowSize), _inputBuffer, _outputBuffer, FFTW_ESTIMATE))
     , _inputBuffer(nullptr)
     , _outputBuffer(nullptr)
+    , _plan(FftwDftPlan(static_cast<U32>(_windowSize), _inputBuffer, _outputBuffer, FFTW_ESTIMATE))
     , _binFrequencies(GetOutputBufferSize())
 {
     // Allocate arrays
@@ -71,7 +71,7 @@ BinData AudioFft::GetTopBin() const
 
 Vector<BinData> AudioFft::GetTopBins(U32 topResults) const
 {
-    Vector<BinData> results(topResults, {0, 0, 0});
+    Vector<BinData> results(topResults);
 
     // Scan whole output buffer
     for (U32 bin = 0; bin < GetOutputBufferSize(); ++bin)

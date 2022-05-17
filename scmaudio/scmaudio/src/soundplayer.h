@@ -27,7 +27,7 @@ private:
     Result<SoundInstancePtr> StoreActiveSoundInstance(SoundInstancePtr soundInstancePtr);
 
 private:
-    U32 _samplingRate;
+//    U32 _samplingRate;
     U32 _channels;
     U32 _maxPolyphony;
     U32 _activeSoundsCount;

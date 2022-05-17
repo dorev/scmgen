@@ -24,30 +24,30 @@ struct SCMAUDIO_API AudioDevice
     U32 preferredSampleRate;
     U32 inputChannels;
     U32 outputChannels;
-#pragma warning(push)
-#pragma warning(disable:4251)
+//#pragma warning(push)
+//#pragma warning(disable:4251)
     Vector<U32> supportedSampleRates;
     String name;
-#pragma warning(pop)
+//#pragma warning(pop)
 
     AudioDevice()
         : id(InvalidId)
         , supported(false)
         , flow(Flow::Invalid)
+        , preferredSampleRate(0)
         , inputChannels(0)
         , outputChannels(0)
         , name("")
-        , preferredSampleRate(0)
     {}
 
     AudioDevice(const RtAudio::DeviceInfo& rtAudioDevice, U32 deviceIndex)
         : id(InvalidId)
         , supported(false)
         , flow(Flow::Invalid)
+        , preferredSampleRate(0)
         , inputChannels(0)
         , outputChannels(0)
         , name("")
-        , preferredSampleRate(0)
     {
         if (rtAudioDevice.probed == false)
             return;

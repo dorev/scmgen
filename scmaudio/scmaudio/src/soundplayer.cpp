@@ -4,12 +4,12 @@
 namespace ScmAudio
 {
 
-SoundPlayer::SoundPlayer(U32 samplingRate, U32 maxPolyphony, U32 channels)
-    : _samplingRate(samplingRate)
-    , _channels(channels)
+SoundPlayer::SoundPlayer(U32 /*samplingRate*/, U32 maxPolyphony, U32 channels)
+//    : _samplingRate(samplingRate)
+    : _channels(channels)
     , _maxPolyphony(maxPolyphony)
-    , _activeSounds(_maxPolyphony)
     , _activeSoundsCount(0)
+    , _activeSounds(_maxPolyphony)
     , _soundInstancePool(2 * _maxPolyphony)
 {
 }

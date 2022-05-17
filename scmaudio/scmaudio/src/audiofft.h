@@ -43,15 +43,15 @@ public:
 
 private:
     U32 _windowSize;
-    U32 _samplingRate;
+    //U32 _samplingRate;
     F32 _binRange;
     F32* _inputBuffer;
     FftwComplex* _outputBuffer;
     FftwPlan _plan;
-#pragma warning(push)
-#pragma warning(disable:4251)
+//#pragma warning(push)
+//#pragma warning(disable:4251)
     Vector<BinFrequency> _binFrequencies;
-#pragma warning(pop)
+//#pragma warning(pop)
 };
 
 } // namespace ScmAudio

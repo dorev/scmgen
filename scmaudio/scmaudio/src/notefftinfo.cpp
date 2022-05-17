@@ -13,7 +13,7 @@ NoteFftInfo::NoteFftInfo(const AudioFft& audioFft, F32 a4Frequency)
     , _noteFrequencies(NoteLimit)
     , _noteFftBins(NoteLimit)
 {
-    for (int i = 0; i < NoteLimit; ++i)
+    for (auto i = 0u; i < NoteLimit; ++i)
     {
         _noteFrequencies[i] = FrequencyOfNote(i, _a4Frequency);
         _noteFftBins[i] = _audioFft.GetBinForFrequency(_noteFrequencies[i]);

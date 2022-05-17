@@ -17,6 +17,8 @@
 #include <vector>
 #include <queue>
 #include <utility>
+#include <limits>
+#include <list>
 
 namespace ScmAudio
 {
@@ -62,11 +64,11 @@ using S64 = int64_t;
 constexpr S64 S64MAX = INT64_MAX;
 constexpr S64 S64MIN = INT64_MIN;
 using F32 = float;
-constexpr F32 F32MAX = FLT_MAX;
-constexpr F32 F32MIN = FLT_MIN;
+constexpr F32 F32MAX = std::numeric_limits<F32>::max();
+constexpr F32 F32MIN = std::numeric_limits<F32>::min();
 using F64 = double;
-constexpr F64 F64MAX = DBL_MAX;
-constexpr F64 F64MIN = DBL_MIN;
+constexpr F64 F64MAX = std::numeric_limits<F64>::max();
+constexpr F64 F64MIN = std::numeric_limits<F64>::min();
 
 ///////////////////////////////////////////////////////////////////////////////
 // Containers
