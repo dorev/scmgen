@@ -2,7 +2,9 @@ InitCppProject(17 Tests)
 
 add_executable(${PROJECT_NAME}
     main.cpp
-    tests.cpp
+    fftprecisiontest.cpp
+    noteprecisiontest.cpp
+    audioenginetests.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

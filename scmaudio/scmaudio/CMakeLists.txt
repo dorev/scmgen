@@ -24,6 +24,7 @@ set(RELEASE_OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY}/Release)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
+    readerwriterqueue
     $<$<CONFIG:Debug>:${DEBUG_OUTPUT_DIRECTORY}/fftw3f.lib>
     $<$<CONFIG:Debug>:${DEBUG_OUTPUT_DIRECTORY}/libnyquist_d.lib>
     $<$<CONFIG:Debug>:${DEBUG_OUTPUT_DIRECTORY}/rtaudiod.lib>
@@ -38,4 +39,4 @@ target_compile_options(${PROJECT_NAME}
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
 )
 
-add_dependencies(ScmAudio fftw3f libnyquist rtaudio)
+add_dependencies(ScmAudio fftw3f libnyquist rtaudio readerwriterqueue)

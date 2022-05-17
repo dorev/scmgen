@@ -2,10 +2,16 @@
 
 #include "types.h"
 #include "defines.h"
+#include <readerwritercircularbuffer.h>
 
 namespace ScmAudio
 {
 
+struct SampleBlock
+{
+    U32 channels;
+    Vector<F32> samples;
+};
 
 class SCMAUDIO_API FftManager
 {
@@ -22,9 +28,11 @@ public:
 
 private:
 
-    // CircularBuffer<F32> _inputBuffer;
-    // CircularBuffer<F32> _monoBuffer;
+    template <class T>
+    using LockfreeCircularBuffer = moodycamel::BlockingReaderWriterCircularBuffer<T>;
 
+    LockfreeCircularBuffer<SampleBlock> _rawBuffersFromAudio;
+    Vector<F32> _monoSamplesForFft;
 
 
 };

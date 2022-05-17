@@ -4,3 +4,6 @@
 [submodule "scmaudio/dependencies/rtaudio"]
 	path = scmaudio/dependencies/rtaudio
 	url = https://github.com/thestk/rtaudio
+[submodule "scmaudio/dependencies/readerwriterqueue"]
+	path = scmaudio/dependencies/readerwriterqueue
+	url = https://github.com/cameron314/readerwriterqueue

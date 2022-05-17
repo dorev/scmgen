@@ -48,6 +48,12 @@ set(RTAUDIO_DIRECTORY ${DEPENDENCIES_DIRECTORY}/rtaudio)
 add_subdirectory(${RTAUDIO_DIRECTORY})
 
 # ==============================================================================
+# MOODYCAMEL READERWRITERQUEUE
+# ==============================================================================
+set(READERWRITERQUEUE_DIRECTORY ${DEPENDENCIES_DIRECTORY}/readerwriterqueue)
+add_subdirectory(${READERWRITERQUEUE_DIRECTORY})
+
+# ==============================================================================
 # SCMAUDIO
 # ==============================================================================
 set(SCMAUDIO_DIRECTORY ${SOLUTION_ROOT}/scmaudio)
