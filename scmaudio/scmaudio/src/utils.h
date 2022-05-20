@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <type_traits>
+#include <thread>
+#include <chrono>
 
 namespace ScmAudio
 {
@@ -34,6 +36,11 @@ template <class T, class U>
 F32 DifferencePercentage(T value1, U value2)
 {
     return abs(F32(value1) - F32(value2)) / ((F32(value1) + F32(value2)) / 2.0f) * 100.0f;
+}
+
+inline void Sleep(U32 milliseconds)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
 } // namespace ScmAudio

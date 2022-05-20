@@ -10,15 +10,15 @@ class AudioEngineTests : public ::testing::Test
 
 // Helper macros
 #define FAIL_ON_ERROR(result) if(result.HasError()) { FAIL() << result.GetError().GetDescription(); }
-
+#define TEST_MP3_PATH R"(../../tests/Kissing The Shadows.mp3)"
 #define PRESS_ENTER_TO_QUIT \
 char input; \
 std::cout << "\nRunning ... press <enter> to quit.\n"; \
 std::cin.get(input);
 
 // Helper variables & methods
-U32 gOutputDevice = 3;// U32(-1);
-U32 gInputDevice = 8;// U32(-1);
+U32 gOutputDevice = U32(-1);
+U32 gInputDevice = U32(-1);
 U32 gDeviceCount = U32(0);
 bool DeviceIdIsValid(U32 device) { return device < gDeviceCount; }
 
@@ -49,7 +49,7 @@ TEST_F(AudioEngineTests, ListDevices)
         std::cout << device.id << ": (" << device.GetFlowString() << ") " << device.name << '\n';
 }
 
-TEST_F(AudioEngineTests, DISABLED_SelectDevicesForTests)
+TEST_F(AudioEngineTests, SelectDevicesForTests)
 {
     while (!DeviceIdIsValid(gOutputDevice))
     {
@@ -85,7 +85,7 @@ TEST_F(AudioEngineTests, PlayMp3)
 
     engine.SetCapture(false);
 
-    Result<SoundId> loadSoundResult = engine.LoadSound(R"(D:\Music\Limp Bizkit - Greatest Hitz\Limp Bizkit - Faith.mp3)");
+    Result<SoundId> loadSoundResult = engine.LoadSound(TEST_MP3_PATH);
     FAIL_ON_ERROR(loadSoundResult);
     const SoundId soundId = loadSoundResult.GetValue();
 
@@ -105,7 +105,7 @@ TEST_F(AudioEngineTests, PlayMp3Twice)
 
     engine.SetCapture(false);
 
-    Result<SoundId> loadSoundResult = engine.LoadSound(R"(D:\Music\Limp Bizkit - Greatest Hitz\Limp Bizkit - Faith.mp3)");
+    Result<SoundId> loadSoundResult = engine.LoadSound(TEST_MP3_PATH);
     FAIL_ON_ERROR(loadSoundResult);
     const SoundId soundId = loadSoundResult.GetValue();
 
@@ -127,7 +127,7 @@ TEST_F(AudioEngineTests, PlayMp3MixedWithCapture)
 
     engine.SetCapture(true);
 
-    Result<SoundId> loadSoundResult = engine.LoadSound(R"(D:\Music\Limp Bizkit - Greatest Hitz\Limp Bizkit - Faith.mp3)");
+    Result<SoundId> loadSoundResult = engine.LoadSound(TEST_MP3_PATH);
     FAIL_ON_ERROR(loadSoundResult);
     const SoundId soundId = loadSoundResult.GetValue();
 
