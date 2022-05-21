@@ -61,8 +61,8 @@ public:
         , _stagingBufferCount(0)
         , _head(0)
         , _tail(0)
+        , _outputBufferSize(outputBufferSize)
         , _stagingBuffers(_blockSize + 1)
-        , _outputBuffer(outputBufferSize)
     {
     }
 
@@ -94,17 +94,20 @@ public:
         );
     }
 
-    bool FillOutputBuffer(void* outputBuffer)
+    bool FillOutputBuffer(Vector<F32>& outputBuffer)
     {
-        if (!Full() || TotalSamples() != _outputBuffer.size())
+        if (!Full() || TotalSamples() != outputBuffer.size())
             return false;
+
+        if (outputBuffer.capacity() != _outputBufferSize)
+            outputBuffer.resize(_outputBufferSize);
 
         for (U32 i = 0; i < (_stagingBuffers.size() - 1); i++)
         {
             bool peeked = false;
             const AudioBuffer& block = Peek(i, peeked);
             if (peeked)
-                memcpy(outputBuffer + i * _blockSize, block.samples.data(), _blockSize);
+                memcpy(outputBuffer.data() + (i * _blockSize), block.samples.data(), _blockSize);
         }
 
     }
@@ -114,8 +117,8 @@ private:
     U32 _stagingBufferCount;
     U32 _head;
     U32 _tail;
+    U32 _outputBufferSize;
     Vector<AudioBuffer> _stagingBuffers;
-    Vector<F32> _outputBuffer;
 };
 
 template <class T>
@@ -190,7 +193,7 @@ public:
             {
                 if (_fftStagingBuffer.TotalSamples() == _fftWindowSize)
                 {
-
+                    _fftStagingBuffer.FillOutputBuffer(_fftBuffer);
 
                 }
                 else
