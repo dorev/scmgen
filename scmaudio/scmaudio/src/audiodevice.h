@@ -24,11 +24,8 @@ struct SCMAUDIO_API AudioDevice
     U32 preferredSampleRate;
     U32 inputChannels;
     U32 outputChannels;
-//#pragma warning(push)
-//#pragma warning(disable:4251)
     Vector<U32> supportedSampleRates;
     String name;
-//#pragma warning(pop)
 
     AudioDevice()
         : id(InvalidId)

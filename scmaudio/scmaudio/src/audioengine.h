@@ -93,14 +93,11 @@ private:
     bool _capture;
     ErrorSource _errorSource;
     RtAudioErrorType _rtAudioError;
-//#pragma warning(push)
-//#pragma warning(disable:4251)
     OutputMixDoneCallback _outputMixDoneCallback;
     SoundStore _soundStore;
     UniquePtr<RtAudio> _rtAudio;
     String _errorMessage;
     SoundPlayer _soundPlayer;
-//#pragma warning(pop)
 };
 
 } // namespace ScmAudio

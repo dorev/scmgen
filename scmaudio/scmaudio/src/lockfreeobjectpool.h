@@ -33,7 +33,7 @@ namespace ScmAudio
                 _nodes[i].next.store(&_nodes[i + 1]);
             _nodes[_size - 1].next.store(nullptr);
 
-            if (sizeof...(Args) > 0)
+            if constexpr (sizeof...(Args) > 0)
             {
                 for (Node& node : _nodes)
                     new (&node.object) T(std::forward<Args>(args)...);
@@ -45,11 +45,16 @@ namespace ScmAudio
             if (_firstNode != nullptr)
             {
                 Node* poppedNode = _firstNode.load();
-                while (!_firstNode.compare_exchange_strong(poppedNode, poppedNode.next));
-                poppedNode.next = nullptr;
+                while (!_firstNode.compare_exchange_strong(poppedNode, poppedNode->next));
+                poppedNode->next = nullptr;
                 return &(poppedNode->object);
             }
             return nullptr;
+        }
+
+        SharedPtr<T> ObtainRefCountedObject()
+        {
+            return SharedPtr<T>(ObtainObject(), GetDeleter());
         }
 
         template <class... Args>
@@ -59,6 +64,12 @@ namespace ScmAudio
             if (objectPtr != nullptr)
                 return new (objectPtr) T(std::forward<Args>(args)...);
             return objectPtr;
+        }
+
+        template <class... Args>
+        SharedPtr<T> ConstructRefCountedObject(Args&&... args)
+        {
+            return SharedPtr<T>(ConstructObject(std::forward<Args>(args)...), GetDeleter());
         }
 
         bool ReleaseObject(T* object)
@@ -71,7 +82,7 @@ namespace ScmAudio
                 {
                     if (firstNode == nullptr)
                         return false;
-                    recycledNode.next = firstNode;
+                    recycledNode->next = firstNode;
                 }
                 while (!_firstNode.compare_exchange_strong(firstNode, recycledNode));
                 return true;

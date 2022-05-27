@@ -1,5 +1,6 @@
 #pragma once
 
+// Export macros
 #if defined(SCMAUDIO_DLL) && defined(_WIN32)
     #ifdef SCMAUDIO_EXPORT
         #define SCMAUDIO_API __declspec(dllexport)
@@ -10,9 +11,7 @@
     #define SCMAUDIO_API
 #endif
 
-#define _2PI 6.28318530718f
-#define _PI 3.14159265359f
-
+// Utilities
 #define DELETE_COPY_CONSTRUCTOR(Class) \
     Class(const Class&) = delete; \
     Class(Class&&) = delete; \
@@ -38,3 +37,8 @@ if(!(condition)) \
 { \
     BREAK("Assertion failed: " #condition); \
 }
+
+#define _2PI 6.28318530718f
+#define _PI 3.14159265359f
+#define CASE_RETURN_STRING(enum, value) case enum::value: return #value
+#define BIT(x) (1 << x)

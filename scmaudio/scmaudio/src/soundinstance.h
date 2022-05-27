@@ -3,12 +3,12 @@
 #include "defines.h"
 #include "sound.h"
 #include "types.h"
-#include "objectpool.h"
+#include "lockfreeobjectpool.h"
 
 namespace ScmAudio
 {
 
-class SoundInstance : public Poolable<SoundInstance>
+class SoundInstance
 {
 public:
     SoundInstance(const Sound* sound = nullptr);

@@ -25,11 +25,8 @@ private:
     F32 _a4Frequency;
     //U32 _outputBinCount;
     //F32 _binRange;
-//#pragma warning(push)
-//#pragma warning(disable:4251)
     Vector<F32> _noteFrequencies;
     Vector<U32> _noteFftBins;
-//#pragma warning(pop)
 };
 
 } // namespace ScmAudio

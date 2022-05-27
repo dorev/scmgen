@@ -32,7 +32,7 @@ private:
     U32 _maxPolyphony;
     U32 _activeSoundsCount;
     Vector<SoundInstancePtr> _activeSounds;
-    ObjectPool<SoundInstance> _soundInstancePool;
+    LockfreeObjectPool<SoundInstance> _soundInstancePool;
 };
 
 } // namespace ScmAudio

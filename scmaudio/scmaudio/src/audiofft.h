@@ -48,10 +48,7 @@ private:
     F32* _inputBuffer;
     FftwComplex* _outputBuffer;
     FftwPlan _plan;
-//#pragma warning(push)
-//#pragma warning(disable:4251)
     Vector<BinFrequency> _binFrequencies;
-//#pragma warning(pop)
 };
 
 } // namespace ScmAudio

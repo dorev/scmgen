@@ -20,6 +20,8 @@
 #include <limits>
 #include <list>
 
+#include <readerwritercircularbuffer.h> // LockfreeCircularBuffer
+
 namespace ScmAudio
 {
 
@@ -102,6 +104,9 @@ using Map = std::map<T, U>;
 
 template <class T,class U>
 using UnorderedMap = std::unordered_map<T, U>;
+
+template <class T>
+using LockfreeCircularBuffer = moodycamel::BlockingReaderWriterCircularBuffer<T>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Pointers

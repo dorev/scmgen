@@ -16,7 +16,7 @@ SoundPlayer::SoundPlayer(U32 /*samplingRate*/, U32 maxPolyphony, U32 channels)
 
 Result<SoundInstancePtr> SoundPlayer::AddSoundInstance(const Sound& sound)
 {
-    SoundInstancePtr soundInstancePtr(_soundInstancePool.ConstructObject(&sound), _soundInstancePool.GetDeleter());
+    SoundInstancePtr soundInstancePtr = _soundInstancePool.ConstructRefCountedObject(&sound);
     return StoreActiveSoundInstance(soundInstancePtr);
 }
 

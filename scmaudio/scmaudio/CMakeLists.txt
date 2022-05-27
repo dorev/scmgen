@@ -17,6 +17,7 @@ target_include_directories(${PROJECT_NAME}
     ${RTAUDIO_DIRECTORY}
     ${LIBNYQUIST_DIRECTORY}/include
     ${FFTW_DIRECTORY}/api
+    ${READERWRITERQUEUE_DIRECTORY}
 )
 
 set(OUTPUT_DIRECTORY ${SOLUTION_OUTPUT_DIRECTORY})
@@ -31,7 +32,7 @@ target_link_libraries(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME}
     PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX -wd4251>
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
 )
 

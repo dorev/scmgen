@@ -43,4 +43,10 @@ inline void Sleep(U32 milliseconds)
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
+inline U64 TimeNow()
+{
+    using namespace std::chrono;
+    return time_point_cast<nanoseconds>(high_resolution_clock::now()).time_since_epoch().count();
+}
+
 } // namespace ScmAudio
