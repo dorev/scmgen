@@ -59,6 +59,8 @@ inline const char* LogCategoryString(LogCategory logCategory)
     return "Invalid LogCategory value";
 }
 
+// Each thread buffers log entries and the Logger singleton periodically
+// gathers and reorders available entries before processing/printing
 class Logger
 {
 private:

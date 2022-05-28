@@ -14,19 +14,17 @@ class SCMAUDIO_API Session
 {
 public:
 
-    String Initialize();
-    Vector<AudioDevice> GetCaptureDevices() const;
-    Vector<AudioDevice> GetPlaybackDevices() const;
+    Vector<AudioDevice> ListCaptureDevices() const;
+    Vector<AudioDevice> ListPlaybackDevices() const;
     String SetPlaybackDevice(const AudioDevice&);
     String SetSource(const AudioDevice&);
-    String SetSource(const String& /*filePath*/);
+    String SetSource(const String&);
+    String SetSource(const void*, U32);
     void Start();
     void Stop();
     void Pause();
     void Resume();
-    void Configure(const Configuration&);
     void ReadSnapshot(SnapshotData&) const;
-    void TapTempo();
 };
 
 } // namespace ScmAudio

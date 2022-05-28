@@ -61,7 +61,6 @@ void Logger::Register(Writer* writer)
     {
         ScopedLock<Mutex> lock(_writersLock);
         _writers[writer->threadId] = writer;
-        LOG(Debug, Generic, "Logger::Writer from thread ", writer->threadId, " registered.");
     }
 }
 
@@ -70,15 +69,15 @@ void Logger::Unregister(Writer* writer)
     if (writer != nullptr)
     {
         ScopedLock<Mutex> lock(_writersLock);
-        LOG(Debug, Generic, "Logger::Writer from thread ", writer->threadId, " unregistered.");
         _writers.erase(writer->threadId);
     }
 }
 
 void Logger::DefaultLoggingFunction(const Entry& entry)
 {
-    std::cout << entry.timestamp << '\t'
-        << entry.threadId << '\t'
+    std::cout
+        //<< entry.timestamp << '\t'
+        //<< entry.threadId << '\t'
         << LogLevelString(entry.level) << '\t'
         << LogCategoryString(entry.category) << '\t'
         << entry.message << '\n';
